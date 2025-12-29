@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Loan, User
+from .models import Book, Borrow, User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 
@@ -39,11 +39,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = "__all__"
 
-class LoanSerializer(serializers.ModelSerializer):
+class BorrowSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     book = BookSerializer(read_only=True)
     book_id = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all(), source="book", write_only=True)
 
     class Meta:
-        model = Loan
+        model = Borrow
         fields = ("id", "user", "book", "book_id", "borrowed_at", "returned_at")

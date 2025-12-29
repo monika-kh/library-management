@@ -18,7 +18,7 @@ class Book(models.Model):
 	def __str__(self):
 		return f"{self.title} by {self.author}"
 
-class Loan(models.Model):
+class Borrow(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	book = models.ForeignKey(Book, on_delete=models.CASCADE)
 	borrowed_at = models.DateTimeField(auto_now_add=True)

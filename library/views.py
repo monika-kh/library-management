@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework import status, permissions, filters
 from rest_framework.response import Response
-from .models import Book, Loan, User
-from .serializers import BookSerializer, LoanSerializer, UserSerializer, RegisterSerializer
+from .models import Book, Borrow, User
+from .serializers import BookSerializer, BorrowSerializer, UserSerializer, RegisterSerializer
 from .permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from django.utils import timezone
 from drf_yasg.utils import swagger_auto_schema
@@ -72,18 +72,18 @@ class BookRetrieveUpdateDestroyAPIView(APIView):
 		book.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
-class LoanListCreateAPIView(APIView):
+class BorrowListCreateAPIView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 
-	@swagger_auto_schema(responses={200: LoanSerializer(many=True)})
+	@swagger_auto_schema(responses={200: BorrowSerializer(many=True)})
 	def get(self, request):
-		loans = Loan.objects.filter(user=request.user)
-		serializer = LoanSerializer(loans, many=True)
+		Borrows = Borrow.objects.filter(user=request.user)
+		serializer = BorrowSerializer(Borrows, many=True)
 		return Response(serializer.data)
 
-	@swagger_auto_schema(request_body=LoanSerializer, responses={201: LoanSerializer})
+	@swagger_auto_schema(request_body=BorrowSerializer, responses={201: BorrowSerializer})
 	def post(self, request):
-		serializer = LoanSerializer(data=request.data)
+		serializer = BorrowSerializer(data=request.data)
 		if serializer.is_valid():
 			book = serializer.validated_data['book']
 			if not book.available:
@@ -94,22 +94,22 @@ class LoanListCreateAPIView(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LoanReturnAPIView(APIView):
+class BorrowReturnAPIView(APIView):
 	permission_classes = [permissions.IsAuthenticated]
 
-	@swagger_auto_schema(responses={200: LoanSerializer})
+	@swagger_auto_schema(responses={200: BorrowSerializer})
 	def post(self, request, pk):
 		try:
-			loan = Loan.objects.get(pk=pk, user=request.user)
-		except Loan.DoesNotExist:
+			Borrow = Borrow.objects.get(pk=pk, user=request.user)
+		except Borrow.DoesNotExist:
 			return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
-		if loan.returned_at:
+		if Borrow.returned_at:
 			return Response({'detail': 'Book already returned.'}, status=status.HTTP_400_BAD_REQUEST)
-		loan.returned_at = timezone.now()
-		loan.book.available = True
-		loan.book.save()
-		loan.save()
-		return Response(LoanSerializer(loan).data)
+		Borrow.returned_at = timezone.now()
+		Borrow.book.available = True
+		Borrow.book.save()
+		Borrow.save()
+		return Response(BorrowSerializer(Borrow).data)
 
 class UserListAPIView(APIView):
 	permission_classes = [permissions.IsAdminUser]
