@@ -1,6 +1,6 @@
 import pytest
-from library.models import Book, User, Loan
-from library.serializers import BookSerializer, UserSerializer, LoanSerializer
+from library.models import Book, User, Borrow
+from library.serializers import BookSerializer, UserSerializer, BorrowSerializer
 
 @pytest.mark.django_db
 def test_book_serializer():
@@ -23,8 +23,8 @@ def test_user_serializer():
 def test_loan_serializer():
     user = User.objects.create_user(username="serloan", password="pass")
     book = Book.objects.create(title="SerLoanBook", author="SerLoanAuthor", isbn="1234567890888", page_count=111)
-    loan = Loan.objects.create(user=user, book=book)
-    serializer = LoanSerializer(loan)
+    loan = Borrow.objects.create(user=user, book=book)
+    serializer = BorrowSerializer(loan)
     data = serializer.data
     assert data["user"]["username"] == "serloan"
     assert data["book"]["title"] == "SerLoanBook"

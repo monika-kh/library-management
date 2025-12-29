@@ -100,16 +100,17 @@ class BorrowReturnAPIView(APIView):
 	@swagger_auto_schema(responses={200: BorrowSerializer})
 	def post(self, request, pk):
 		try:
-			Borrow = Borrow.objects.get(pk=pk, user=request.user)
+			borrow = Borrow.objects.get(pk=pk, user=request.user)
 		except Borrow.DoesNotExist:
-			return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
-		if Borrow.returned_at:
+			return Response({'detail': 'Not found.'},
+				    status=status.HTTP_404_NOT_FOUND)
+		if borrow.returned_at:
 			return Response({'detail': 'Book already returned.'}, status=status.HTTP_400_BAD_REQUEST)
-		Borrow.returned_at = timezone.now()
-		Borrow.book.available = True
-		Borrow.book.save()
-		Borrow.save()
-		return Response(BorrowSerializer(Borrow).data)
+		borrow.returned_at = timezone.now()
+		borrow.book.available = True
+		borrow.book.save()
+		borrow.save()
+		return Response(BorrowSerializer(borrow).data)
 
 class UserListAPIView(APIView):
 	permission_classes = [permissions.IsAdminUser]

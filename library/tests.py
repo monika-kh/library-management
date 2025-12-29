@@ -15,11 +15,11 @@ def test_create_book():
 def test_borrow_and_return_book():
 	user = User.objects.create_user(username="testuser", password="pass")
 	book = Book.objects.create(title="Test Book", author="Author", isbn="1234567890124", page_count=100)
-	Borrow = Borrow.objects.create(user=user, book=book)
+	borrow_obj = Borrow.objects.create(user=user, book=book)
 	book.refresh_from_db()
-	assert Borrow.user == user
-	assert Borrow.book == book
+	assert borrow_obj.user == user
+	assert borrow_obj.book == book
 	assert book.available is False or book.available is True  # Book availability logic may be handled in view
-	Borrow.returned_at = "2025-12-28T00:00:00Z"
-	Borrow.save()
-	assert Borrow.returned_at is not None
+	borrow_obj.returned_at = "2025-12-28T00:00:00Z"
+	borrow_obj.save()
+	assert borrow_obj.returned_at is not None

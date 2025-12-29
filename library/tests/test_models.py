@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
-from library.models import Book, Loan
+from library.models import Book, Borrow
 
 User = get_user_model()
 
@@ -14,7 +14,7 @@ def test_create_book():
 def test_loan_creation_and_return():
     user = User.objects.create_user(username="testuser", password="pass")
     book = Book.objects.create(title="Test Book", author="Author", isbn="1234567890124", page_count=100)
-    loan = Loan.objects.create(user=user, book=book)
+    loan = Borrow.objects.create(user=user, book=book)
     assert loan.user == user
     assert loan.book == book
     assert loan.returned_at is None
